@@ -1,0 +1,9 @@
+src/
+coverage/
+node_modules/
+tests/
+.editorconfig
+.istanbul.yml
+.eslintrc
+.babelrc
+webpack.config.js
