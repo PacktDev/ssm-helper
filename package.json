@@ -31,7 +31,7 @@
   "license": "Apache-2.0",
   "homepage": "https://bitbucket.org/packt-internal/ssm-helper",
   "devDependencies": {
-    "aws-sdk-mock": "^4.1.0",
+    "aws-sdk-mock": "4.1.0",
     "babel-cli": "6.26.0",
     "babel-core": "6.26.3",
     "babel-istanbul": "0.12.2",
@@ -53,9 +53,9 @@
   },
   "dependencies": {
     "@packt/error-custom": "0.1.2",
-    "aws-sdk": "^2.318.0",
-    "commander": "^2.18.0",
-    "debug": "^4.0.1",
-    "joi": "^13.6.0"
+    "aws-sdk": "2.318.0",
+    "commander": "2.18.0",
+    "debug": "4.0.1",
+    "joi": "13.6.0"
   }
 }
