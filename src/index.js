@@ -50,7 +50,11 @@ export default class SSMHelper {
     }
 
     this.logger.info(`Local ENV: ${keyName} = ${process.env[keyName]}`);
-    return process.env[keyName];
+    if (process.env[keyName]) {
+      return Promise.resolve(process.env[keyName]);
+    }
+
+    return Promise.reject(new Error('Unknown ENV variable'));
   }
 
   set(keyName, keyValue) {
@@ -68,6 +72,8 @@ export default class SSMHelper {
         });
     }
 
-    return process.env[keyName];
+    process.env[keyName] = keyValue;
+    this.logger.info(`Local ENV: ${keyName} = ${process.env[keyName]}`);
+    return Promise.resolve(process.env[keyName]);
   }
 }
