@@ -53,9 +53,9 @@
   },
   "dependencies": {
     "@packt/error-custom": "0.1.2",
-    "aws-sdk": "2.318.0",
-    "commander": "2.18.0",
-    "debug": "4.0.1",
-    "joi": "13.6.0"
+    "aws-sdk": "^2.484.0",
+    "commander": "2.20.0",
+    "debug": "4.1.1",
+    "joi": "14.3.1"
   }
 }
