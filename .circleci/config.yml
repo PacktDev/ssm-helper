@@ -9,6 +9,7 @@ jobs:
   build:
     <<: *defaults  
     steps:
+      - run: npm i -g npm
       - checkout
 
       - restore_cache:
