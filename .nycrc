@@ -1,0 +1,25 @@
+{
+    "all": true,
+    "check-coverage": true,
+    "include": [
+      "src/**/*.js"
+    ],
+    "exclude": [
+      "src/handlers/deployment.js",
+      "src/sequelize/migrations/*.js",
+      "src/sequelize/seeders/*.js"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "branches": 95,
+    "lines": 95,
+    "functions": 95,
+    "statements": 95,
+    "require": [
+      "@babel/register"
+    ]
+  }
