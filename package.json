@@ -1,6 +1,6 @@
 {
   "name": "@packt/ssm-helper",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Module and CLI tool to help handle SSM variables",
   "main": "dist/index.js",
   "bin": {

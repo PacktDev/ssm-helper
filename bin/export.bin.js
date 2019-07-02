@@ -16,6 +16,7 @@
 const commander = require('commander');
 const Fs = require('fs');
 const SSMhelper = require('../dist').default;
+const path = require('path');
 
 // Debug
 process.env.DEBUG = (process.env.DEBUG) ? `${process.env.DEBUG},ssm-helper:export` : 'ssm-helper:export';
@@ -41,7 +42,7 @@ if (!commander.envVariables) {
 }
 
 const availableEnvs = Fs.existsSync(commander.envVariables)
-  ? require(commander.envVariables)
+  ? require(path.resolve(commander.envVariables))
   : commander.envVariables.split(',');
 
 const SSM = new SSMhelper({
