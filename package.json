@@ -43,14 +43,14 @@
     "chai-as-promised": "7.1.1",
     "chai-bytes": "0.1.2",
     "eslint": "6.0.1",
-    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-config-airbnb-base": "13.2.0",
     "eslint-plugin-import": "2.18.0",
     "mocha": "6.1.4",
     "mocha-bamboo-reporter": "1.1.2",
     "nyc": "14.1.1",
     "sinon": "7.3.2",
     "uuid": "3.3.2",
-    "webpack": "4.35.0",
+    "webpack": "4.35.2",
     "webpack-cli": "3.3.5"
   },
   "dependencies": {
