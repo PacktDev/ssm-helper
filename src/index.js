@@ -1,6 +1,11 @@
 import Debug from 'debug';
 import AWS from 'aws-sdk';
 import Joi from 'joi';
+import NodeCache from 'node-cache';
+
+const cache = new NodeCache({
+  stdTTL: 60,
+});
 
 export default class SSMHelper {
   constructor(params) {
@@ -11,6 +16,7 @@ export default class SSMHelper {
     };
     const joiValidation = Joi.validate(config, {
       OFFLINE: Joi.boolean(),
+      cache: Joi.boolean(),
       stage: Joi.string(),
       region: Joi.string(),
     });
@@ -23,6 +29,7 @@ export default class SSMHelper {
     this.logger.info('Config Object:');
     this.logger.info(config);
     this.OFFLINE = config.OFFLINE || false;
+    this.cache = (config.cache) ? cache : false;
     this.stage = config.stage || 'dev';
     this.region = config.region || 'eu-west-1';
     this.ssm = new AWS.SSM({
@@ -31,22 +38,26 @@ export default class SSMHelper {
     });
   }
 
+  stageKey(keyName) {
+    return `${this.stage}_${keyName}`.toUpperCase();
+  }
+
   get(keyName) {
     if (!this.OFFLINE) {
-      const stageKey = `${this.stage}_${keyName}`.toUpperCase();
-      return this.ssm.getParameter({
-        Name: stageKey,
-        WithDecryption: true,
-      }).promise()
-        .then((result) => {
-          this.logger.info(`Response for ${stageKey}`);
-          this.logger.info(result);
-          return result.Parameter.Value;
-        })
-        .catch((error) => {
-          this.logger.error(error);
-          return Promise.reject(error);
-        });
+      const stageKey = this.stageKey(keyName);
+      if (this.cache) {
+        const cachedKeyValue = this.cache.get(stageKey);
+        /* istanbul ignore else */
+        if (cachedKeyValue) {
+          this.logger.info(`Cache for ${stageKey} found`);
+          return Promise.resolve(cachedKeyValue);
+        }
+
+        this.logger.info(`No cache found for ${stageKey}`);
+        return this.getAws(stageKey);
+      }
+
+      return this.getAws(stageKey);
     }
 
     this.logger.info(`Local ENV: ${keyName} = ${process.env[keyName]}`);
@@ -75,5 +86,33 @@ export default class SSMHelper {
     process.env[keyName] = keyValue;
     this.logger.info(`Local ENV: ${keyName} = ${process.env[keyName]}`);
     return Promise.resolve(process.env[keyName]);
+  }
+
+  getAws(stageKey) {
+    return this.ssm.getParameter({
+      Name: stageKey,
+      WithDecryption: true,
+    }).promise()
+      .then((result) => {
+        this.logger.info(`Response for ${stageKey}`);
+        this.logger.info(result);
+        const { Value } = result.Parameter;
+        if (this.cache) {
+          try {
+            /* istanbul ignore else */
+            if (this.cache.set(stageKey, Value)) {
+              this.logger.info(`Successfully written ${stageKey} to cache`);
+            }
+          } catch (error) {
+            this.logger.error(error);
+          }
+        }
+
+        return Promise.resolve(Value);
+      })
+      .catch((error) => {
+        this.logger.error(error);
+        return Promise.reject(error);
+      });
   }
 }
