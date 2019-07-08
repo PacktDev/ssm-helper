@@ -200,7 +200,7 @@ describe('SSM Helper', () => {
         cache: true,
       });
       const stageKey = 'DEV_TESTY';
-      SSM.getAws('DEV_TESTY')
+      SSM.getAws(stageKey)
         .then((result) => {
           expect(SSM.cache.get(stageKey)).to.eql(testValue);
           expect(result).to.eql(testValue);
