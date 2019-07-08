@@ -116,9 +116,7 @@ describe('SSM Helper', () => {
       });
 
       SSM.get('TESTY')
-        .then(() => {
-          return SSM.get('TESTY');
-        })
+        .then(() => SSM.get('TESTY'))
         .then((result) => {
           expect(result).to.eql(testValue);
           done();
