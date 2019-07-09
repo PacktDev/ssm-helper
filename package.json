@@ -1,6 +1,6 @@
 {
   "name": "@packt/ssm-helper",
-  "version": "0.0.4",
+  "version": "0.1.1",
   "description": "Module and CLI tool to help handle SSM variables",
   "main": "dist/index.js",
   "bin": {
@@ -12,7 +12,9 @@
     "lint": "eslint ./src",
     "coverage": "nyc npm run unit",
     "unit": "./node_modules/.bin/mocha --require @babel/register --timeout 5s",
-    "prepublishOnly": "npm run test && npm run build"
+    "prepublishOnly": "npm run test && npm run build",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -58,6 +60,9 @@
     "aws-sdk": "^2.484.0",
     "commander": "2.20.0",
     "debug": "4.1.1",
-    "joi": "14.3.1"
-  }
+    "joi": "14.3.1",
+    "node-cache": "4.2.0",
+    "snyk": "^1.192.4"
+  },
+  "snyk": true
 }

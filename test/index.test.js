@@ -1,18 +1,21 @@
 /* eslint-env node, mocha */
 
-import sinon from 'sinon'; // eslint-disable-line
-import chai from 'chai'; // eslint-disable-line
+import sinon from 'sinon';
+import chai from 'chai';
 import AWSMock from 'aws-sdk-mock';
+import UUID from 'uuid/v4';
 
 import SSMHelper from '../src';
 
-const expect = chai.expect;
-const assert = chai.assert;
-
+const { expect } = chai;
+let sandbox;
 describe('SSM Helper', () => {
   beforeEach(() => {
     AWSMock.restore();
-    process.env.TESTY = 'itsanofflinetest';
+    sandbox = sinon.createSandbox();
+  });
+  afterEach(() => {
+    sandbox.restore();
   });
   describe('constructor', () => {
     it('successfully instantiate', (done) => {
@@ -41,7 +44,15 @@ describe('SSM Helper', () => {
     });
   });
 
-  describe('Getter', () => {
+  describe('stageKey', () => {
+    it('Generates correct stageKey', () => {
+      const SSM = new SSMHelper();
+      const stageKey = SSM.stageKey('its_a_key');
+      expect(stageKey).to.eql('DEV_ITS_A_KEY');
+    });
+  });
+
+  describe('get', () => {
     it('successfully gets', (done) => {
       const testValue = 'itsatest';
       AWSMock.mock('SSM', 'getParameter', (params, callback) => {
@@ -84,13 +95,46 @@ describe('SSM Helper', () => {
         })
         .catch(done);
     });
+    it('successfully gets and caches', (done) => {
+      const testValue = UUID();
+      AWSMock.mock('SSM', 'getParameter', (params, callback) => {
+        callback(null, {
+          Parameter:
+                    {
+                      Name: 'DEV_TESTY',
+                      Type: 'SecureString',
+                      Value: testValue,
+                      Version: 4,
+                      LastModifiedDate: new Date().toISOString(),
+                      ARN: 'arn:aws:ssm:eu-west-1:*:parameter/DEV_TESTY',
+                    },
+        });
+      });
+
+      const SSM = new SSMHelper({
+        cache: true,
+      });
+
+      SSM.get('TESTY')
+        .then(() => SSM.get('TESTY'))
+        .then((result) => {
+          expect(result).to.eql(testValue);
+          done();
+        })
+        .catch(done);
+    });
     it('successfully gets - offline', (done) => {
+      const offlineGet = 'TESTingOffline';
+      sandbox.stub(process, 'env')
+        .value({
+          TESTY: offlineGet,
+        });
       const SSM = new SSMHelper({
         OFFLINE: true,
       });
       SSM.get('TESTY')
         .then((result) => {
-          expect(result).to.eql(process.env.TESTY);
+          expect(result).to.eql(offlineGet);
           done();
         })
         .catch(done);
@@ -111,9 +155,94 @@ describe('SSM Helper', () => {
     });
   });
 
-  describe('Setter', () => {
+  describe('getAws', () => {
+    it('successfully gets', (done) => {
+      const testValue = UUID();
+      AWSMock.mock('SSM', 'getParameter', (params, callback) => {
+        callback(null, {
+          Parameter:
+                    {
+                      Name: 'DEV_TESTY',
+                      Type: 'SecureString',
+                      Value: testValue,
+                      Version: 4,
+                      LastModifiedDate: new Date().toISOString(),
+                      ARN: 'arn:aws:ssm:eu-west-1:*:parameter/DEV_TESTY',
+                    },
+        });
+      });
+
+      const SSM = new SSMHelper({});
+      SSM.getAws('DEVB_TESTY')
+        .then((result) => {
+          expect(result).to.eql(testValue);
+          done();
+        })
+        .catch(done);
+    });
+    it('successfully gets and adds to cache', (done) => {
+      const testValue = UUID();
+      AWSMock.mock('SSM', 'getParameter', (params, callback) => {
+        callback(null, {
+          Parameter:
+                    {
+                      Name: 'DEV_TESTY',
+                      Type: 'SecureString',
+                      Value: testValue,
+                      Version: 4,
+                      LastModifiedDate: new Date().toISOString(),
+                      ARN: 'arn:aws:ssm:eu-west-1:*:parameter/DEV_TESTY',
+                    },
+        });
+      });
+
+      const SSM = new SSMHelper({
+        cache: true,
+      });
+      const stageKey = 'DEV_TESTY';
+      SSM.getAws(stageKey)
+        .then((result) => {
+          expect(SSM.cache.get(stageKey)).to.eql(testValue);
+          expect(result).to.eql(testValue);
+          done();
+        })
+        .catch(done);
+    });
+    it('successfully gets but fails to cache', (done) => {
+      const testStageKey = UUID();
+      const testValue = UUID();
+      AWSMock.mock('SSM', 'getParameter', (params, callback) => {
+        callback(null, {
+          Parameter:
+                    {
+                      Name: 'DEV_TESTY',
+                      Type: 'SecureString',
+                      Value: testValue,
+                      Version: 4,
+                      LastModifiedDate: new Date().toISOString(),
+                      ARN: `arn:aws:ssm:eu-west-1:*:parameter/${testStageKey}`,
+                    },
+        });
+      });
+
+      const SSM = new SSMHelper({
+        cache: true,
+      });
+      SSM.cache.set = () => {
+        throw new Error('Boomstick');
+      };
+
+      SSM.getAws(testStageKey)
+        .then((result) => {
+          expect(result).to.eql(testValue);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('set', () => {
     it('successfully set', (done) => {
-      const testValue = 'itsatest';
       AWSMock.mock('SSM', 'putParameter', (params, callback) => {
         callback(null, { Version: 1 });
       });
