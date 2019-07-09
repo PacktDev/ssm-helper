@@ -42,7 +42,7 @@ export default class SSMHelper {
     this.logger.info('Config Object:');
     this.logger.info(config);
     this.OFFLINE = config.OFFLINE || false;
-    this.cache = (config.cache) ? cache : false;
+    this.cache = (config.cache || typeof config.cache === 'undefined') ? cache : false;
     this.stage = config.stage || 'dev';
     this.region = config.region || 'eu-west-1';
     this.ssm = new AWS.SSM({

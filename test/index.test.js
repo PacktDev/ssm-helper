@@ -54,23 +54,26 @@ describe('SSM Helper', () => {
 
   describe('get', () => {
     it('successfully gets', (done) => {
-      const testValue = 'itsatest';
+      const testENV = UUID();
+      const testValue = UUID();
       AWSMock.mock('SSM', 'getParameter', (params, callback) => {
         callback(null, {
           Parameter:
                     {
-                      Name: 'DEV_TESTY',
+                      Name: `DEV_${testENV}`,
                       Type: 'SecureString',
                       Value: testValue,
                       Version: 4,
                       LastModifiedDate: new Date().toISOString(),
-                      ARN: 'arn:aws:ssm:eu-west-1:*:parameter/DEV_TESTY',
+                      ARN: `arn:aws:ssm:eu-west-1:*:parameter/DEV_${testENV}`,
                     },
         });
       });
 
-      const SSM = new SSMHelper();
-      SSM.get('TESTY')
+      const SSM = new SSMHelper({
+        cache: false,
+      });
+      SSM.get(testENV)
         .then((result) => {
           expect(result).to.eql(testValue);
           done();
@@ -82,7 +85,9 @@ describe('SSM Helper', () => {
         callback(new Error('ParameterNotFound: null'));
       });
 
-      const SSM = new SSMHelper();
+      const SSM = new SSMHelper({
+        cache: false,
+      });
       SSM.get('TESTY')
         .then(() => {
           expect('true').to.eql('false');
