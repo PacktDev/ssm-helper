@@ -33,7 +33,7 @@
   "license": "Apache-2.0",
   "homepage": "https://github.com/PacktDev/ssm-helper",
   "devDependencies": {
-    "@babel/cli": "7.5.0",
+    "@babel/cli": "7.7.5",
     "@babel/core": "7.5.0",
     "@babel/node": "7.5.0",
     "@babel/preset-env": "7.5.0",
