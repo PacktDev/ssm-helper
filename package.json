@@ -37,7 +37,7 @@
     "@babel/core": "7.8.6",
     "@babel/node": "7.8.4",
     "@babel/preset-env": "7.8.6",
-    "@babel/register": "7.4.4",
+    "@babel/register": "7.8.6",
     "aws-sdk-mock": "4.5.0",
     "babel-loader": "8.0.6",
     "babel-preset-env": "1.7.0",
