@@ -47,7 +47,7 @@
     "eslint": "6.0.1",
     "eslint-config-airbnb-base": "13.2.0",
     "eslint-plugin-import": "2.18.0",
-    "mocha": "6.1.4",
+    "mocha": "7.2.0",
     "mocha-bamboo-reporter": "1.1.2",
     "nyc": "14.1.1",
     "sinon": "7.3.2",
