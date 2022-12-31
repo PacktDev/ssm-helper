@@ -39,7 +39,7 @@
     "@babel/preset-env": "7.5.0",
     "@babel/register": "7.4.4",
     "aws-sdk-mock": "4.5.0",
-    "babel-loader": "8.0.6",
+    "babel-loader": "8.3.0",
     "babel-preset-env": "1.7.0",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
@@ -52,8 +52,8 @@
     "nyc": "14.1.1",
     "sinon": "7.3.2",
     "uuid": "3.3.2",
-    "webpack": "4.35.3",
-    "webpack-cli": "3.3.5"
+    "webpack": "5.75.0",
+    "webpack-cli": "5.0.1"
   },
   "dependencies": {
     "@packt/error-custom": "0.1.3",
